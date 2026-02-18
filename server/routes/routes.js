@@ -2,6 +2,7 @@ import express from 'express';
 import { registerUser, loginUser, getAllUsers, getUser, updateUser, changeAvatar, followUnfollowUser  } from '../controllers/userController.js'; 
 import { createPost, getPost, getAllPosts, updatePost, deletePost, getUserBookmarks, createBookmarkPost, likeDislikePost, getFollowingPosts, getUserPosts } from '../controllers/postContorller.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
+import { createComment, deleteComment, getPostComment } from '../controllers/commentController.js';
 
   
 const router = express.Router();
@@ -26,6 +27,11 @@ router.delete('/posts/delete/:id', authMiddleware, deletePost);
 router.get('/posts/:id/like', authMiddleware, likeDislikePost);
 router.get('/posts/:id/bookmark', authMiddleware, createBookmarkPost)
 
+
+// COMMENT ROUTES
+router.post('/comments/:postId',authMiddleware, createComment);
+router.get('/comments/:postId',authMiddleware, getPostComment);
+router.delete('/comments/:commentId',authMiddleware, deleteComment);
 export default router;
 
 // paused @ 46:23 part 2 youtube video
