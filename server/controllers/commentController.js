@@ -16,15 +16,13 @@ export const createComment = async (req, res, next) => {
     }
 
     const commentCreator = await User.findById(req.user.id); 
-    if (!commentCreator) {
-      return next(new HttpError("User not found", 404));
-    }
+    
     // get comment creator 
     const newComment = await Comment.create({
       creator: {
         creatorId:  req.user.id ,
-        creatorName: commentCreator?.fullname,
-        creatorAvatar: commentCreator?.creatorAvatar,
+        creatorName: commentCreator.fullname,
+        creatorAvatar: commentCreator.profileAvatar,
       }, comment, postId })
     await Post.findByIdAndUpdate(postId, { $push: { comments: newComment?._id } }, {new: true});
   
@@ -38,7 +36,9 @@ export const createComment = async (req, res, next) => {
 // GET: /api/comments/:postId
 export const getPostComment = async (req, res, next) => { 
   try {
-    res.json({ message: "Retrived comment successfully" });
+    const { postId } = req.params;
+    const comments = await Post.findById(postId).populate({ path: 'comments', options: { sort: { createdAt: -1 }} })
+    res.json(comments);
   } catch (error) {
     return next(new HttpError);
   }
@@ -48,7 +48,17 @@ export const getPostComment = async (req, res, next) => {
 // DELETE: /api/comments/:commentId
 export const deleteComment = async (req, res, next) => { 
   try {
-    res.json({ message: "Comment deleted successfully" });
+    const { commentId } = req.params;
+    const comment = await Comment.findById(commentId);
+
+    const commentCreator = await User.findById(comment?.creator?.creatorId)
+    if (commentCreator?._id != req.user.id) {
+      return next(new HttpError('Unauthorized actions.', 403))
+    }
+
+    await Post.findByIdAndUpdate(comment?.postId, { $pull: { comments: commentId } });
+    const deletedComment = await Comment.findByIdAndDelete(commentId)
+    res.json(deletedComment);
   } catch (error) {
     return next(new HttpError);
   }

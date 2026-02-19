@@ -5,9 +5,9 @@ import upload from 'express-fileupload';
 import { connectDB } from './config/mongodb.js';
 import { errorHandler, notFound } from './middlewares/errorMiddleware.js';
 import routes from './routes/routes.js';
+import { server, app } from './socket/socket.js';
  
 
-const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
@@ -38,7 +38,7 @@ const startServer = async () => {
     await connectDB();
     
     // 2. Start listening only after DB is ready
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
   } catch (error) {

@@ -3,6 +3,7 @@ import { registerUser, loginUser, getAllUsers, getUser, updateUser, changeAvatar
 import { createPost, getPost, getAllPosts, updatePost, deletePost, getUserBookmarks, createBookmarkPost, likeDislikePost, getFollowingPosts, getUserPosts } from '../controllers/postContorller.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
 import { createComment, deleteComment, getPostComment } from '../controllers/commentController.js';
+import { createMessage, getConversations, getMessages } from '../controllers/messageController.js';
 
   
 const router = express.Router();
@@ -34,4 +35,7 @@ router.get('/comments/:postId',authMiddleware, getPostComment);
 router.delete('/comments/:commentId',authMiddleware, deleteComment);
 export default router;
 
-// paused @ 46:23 part 2 youtube video
+// MESSAGE ROUTES
+router.post('/messages/:receiverId',authMiddleware,  createMessage);
+router.get('/messages/:receiverId', authMiddleware, getMessages);
+router.get('/conversations', authMiddleware, getConversations)
